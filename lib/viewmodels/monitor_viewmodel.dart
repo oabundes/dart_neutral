@@ -83,25 +83,20 @@ class MonitorViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      if (isDemoMode) {
-        // En modo demo, simulamos la obtención de datos
-        final rawData = await _apiService.fetchProcessData(railwayUrl, isDemoMode);
-        final double level = rawData['nivel'];
-        final double ph = rawData['ph'];
-        final int step = rawData['step'];
+      // Obtenemos los datos desde el servicio en Railway (o datos simulados si isDemoMode == true)
+      final rawData = await _apiService.fetchProcessData(railwayUrl, isDemoMode);
+      final double level = rawData['nivel'];
+      final double ph = rawData['ph'];
+      final int step = rawData['step'];
 
-        final desc = await _supabaseService.getStepDescription(step, isDemoMode);
+      final desc = await _supabaseService.getStepDescription(step, isDemoMode);
 
-        _data = ProcessData(
-          level: level,
-          ph: ph,
-          step: step,
-          stepDescription: desc,
-        );
-      } else {
-        // En producción dependemos de las notificaciones Push (FCM).
-        // No hacemos la petición GET inicial para evitar el error del servidor HTML.
-      }
+      _data = ProcessData(
+        level: level,
+        ph: ph,
+        step: step,
+        stepDescription: desc,
+      );
     } catch (e) {
       _errorMessage = 'Error al actualizar datos: $e';
     } finally {

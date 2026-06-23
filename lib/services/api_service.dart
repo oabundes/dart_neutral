@@ -29,7 +29,7 @@ class ApiService {
         try {
           final data = json.decode(response.body);
           return {
-            'nivel': (data['nivel'] ?? 0).toDouble(),
+            'nivel': (data['level'] ?? data['nivel'] ?? 0).toDouble(), // Soporta 'level' que viene de Redis
             'ph': (data['ph'] ?? 0).toDouble(),
             'step': data['step'] ?? 0,
           };
