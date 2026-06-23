@@ -19,7 +19,8 @@ class ApiService {
     }
 
     try {
-      final response = await http.get(Uri.parse(url));
+      final uri = Uri.parse('${url.replaceAll(RegExp(r'/$'), '')}/estado');
+      final response = await http.get(uri);
       if (response.statusCode == 200) {
         // Verificar si el servidor devolvió HTML (probablemente la página raíz por defecto)
         if (response.body.trim().startsWith('<')) {
