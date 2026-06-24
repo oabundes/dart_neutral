@@ -97,6 +97,47 @@ class ApiService {
       return ComandoResult(ok: false, mensaje: 'Error de conexión: $e');
     }
   }
+
+  /// Connects to the SSE endpoint of the middleware to receive real-time updates.
+  /// Yields decoded maps containing status updates.
+  Stream<Map<String, dynamic>> getProcessDataStream(String baseUrl, http.Client client) async* {
+    final cleanUrl = baseUrl.replaceAll(RegExp(r'/$'), '');
+    final uri = Uri.parse('$cleanUrl/estado-stream');
+    
+    final request = http.Request('GET', uri);
+    request.headers['Accept'] = 'text/event-stream';
+    request.headers['Cache-Control'] = 'no-cache';
+
+    final response = await client.send(request);
+    if (response.statusCode == 200) {
+      final lineStream = response.stream
+          .transform(utf8.decoder)
+          .transform(const LineSplitter());
+
+      await for (final line in lineStream) {
+        final trimmed = line.trim();
+        if (trimmed.startsWith('data:')) {
+          final jsonStr = trimmed.substring(5).trim();
+          if (jsonStr.isNotEmpty) {
+            try {
+              final data = jsonDecode(jsonStr);
+              if (data is Map<String, dynamic>) {
+                yield {
+                  'nivel': (data['level'] ?? data['nivel'] ?? 0).toDouble(),
+                  'ph': (data['ph'] ?? 0).toDouble(),
+                  'step': data['step'] ?? 0,
+                };
+              }
+            } catch (_) {
+              // Ignore invalid lines or non-JSON payloads
+            }
+          }
+        }
+      }
+    } else {
+      throw Exception('Servidor respondió con código HTTP ${response.statusCode}');
+    }
+  }
 }
 
 /// Simple value object that carries the result of [enviarComandoBoron].

@@ -37,6 +37,18 @@ class _HomeViewState extends State<HomeView> {
       final token = await messaging.getToken();
       print('[FCM Token] $token');
 
+      // Gestionar suscripción al tema según la preferencia del usuario
+      if (mounted) {
+        final vm = Provider.of<MonitorViewModel>(context, listen: false);
+        if (vm.isPushEnabled) {
+          await messaging.subscribeToTopic('notificaciones_neutralizacion');
+          print('[FCM] Inicialización: Suscrito al tema: notificaciones_neutralizacion');
+        } else {
+          await messaging.unsubscribeFromTopic('notificaciones_neutralizacion');
+          print('[FCM] Inicialización: Desuscrito del tema: notificaciones_neutralizacion');
+        }
+      }
+
       // Escuchar mensajes cuando la app está en primer plano
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
         if (message.data.isNotEmpty && mounted) {

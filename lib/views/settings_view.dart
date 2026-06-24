@@ -13,6 +13,8 @@ class SettingsView extends StatefulWidget {
 class _SettingsViewState extends State<SettingsView> {
   bool _isDemoMode = true;
   bool _showBoronButton = false;
+  bool _isAutoUpdateEnabled = false;
+  bool _isPushEnabled = true;
 
   @override
   void initState() {
@@ -20,12 +22,16 @@ class _SettingsViewState extends State<SettingsView> {
     final vm = context.read<MonitorViewModel>();
     _isDemoMode = vm.isDemoMode;
     _showBoronButton = vm.showBoronButton;
+    _isAutoUpdateEnabled = vm.isAutoUpdateEnabled;
+    _isPushEnabled = vm.isPushEnabled;
   }
 
   void _saveSettings() {
     context.read<MonitorViewModel>().saveSettings(
       demoMode: _isDemoMode,
       showBoron: _showBoronButton,
+      autoUpdate: _isAutoUpdateEnabled,
+      pushEnabled: _isPushEnabled,
     );
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Configuración guardada')),
@@ -63,6 +69,30 @@ class _SettingsViewState extends State<SettingsView> {
               onChanged: (val) {
                 setState(() {
                   _showBoronButton = val;
+                });
+              },
+            ),
+            const SizedBox(height: 16),
+            SwitchListTile(
+              title: const Text('Actualización automática'),
+              subtitle: const Text('Actualiza el nivel y pH en tiempo real usando SSE'),
+              activeThumbColor: AppTheme.solenisMint,
+              value: _isAutoUpdateEnabled,
+              onChanged: (val) {
+                setState(() {
+                  _isAutoUpdateEnabled = val;
+                });
+              },
+            ),
+            const SizedBox(height: 16),
+            SwitchListTile(
+              title: const Text('Notificaciones push'),
+              subtitle: const Text('Recibir alertas de pH y del tanque'),
+              activeThumbColor: AppTheme.solenisMint,
+              value: _isPushEnabled,
+              onChanged: (val) {
+                setState(() {
+                  _isPushEnabled = val;
                 });
               },
             ),
