@@ -34,6 +34,7 @@ class MonitorViewModel extends ChangeNotifier {
 
   // Settings
   bool isDemoMode = true;
+  bool showBoronButton = false;
   String get railwayUrl => dotenv.env['RAILWAY_URL'] ?? '';
   String get supabaseUrl => dotenv.env['SUPABASE_URL'] ?? '';
   String get supabaseKey => dotenv.env['SUPABASE_KEY'] ?? '';
@@ -47,17 +48,21 @@ class MonitorViewModel extends ChangeNotifier {
   Future<void> _loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
     isDemoMode = prefs.getBool('isDemoMode') ?? true;
+    showBoronButton = prefs.getBool('showBoronButton') ?? false;
     
     await _initSupabase();
   }
 
   Future<void> saveSettings({
     required bool demoMode,
+    required bool showBoron,
   }) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isDemoMode', demoMode);
+    await prefs.setBool('showBoronButton', showBoron);
 
     isDemoMode = demoMode;
+    showBoronButton = showBoron;
     
     notifyListeners();
     refreshData();

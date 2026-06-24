@@ -30,4 +30,34 @@ void main() {
     // Verify that our app bar title exists
     expect(find.text('Tanque de Neutralización'), findsOneWidget);
   });
+
+  testWidgets('Boron button is not visible by default', (WidgetTester tester) async {
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => MonitorViewModel()),
+        ],
+        child: const MyApp(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Consultar Boron'), findsNothing);
+  });
+
+  testWidgets('Boron button is visible when showBoronButton is true', (WidgetTester tester) async {
+    SharedPreferences.setMockInitialValues({'showBoronButton': true});
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => MonitorViewModel()),
+        ],
+        child: const MyApp(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Consultar Boron'), findsOneWidget);
+  });
 }

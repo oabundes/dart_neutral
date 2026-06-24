@@ -12,17 +12,20 @@ class SettingsView extends StatefulWidget {
 
 class _SettingsViewState extends State<SettingsView> {
   bool _isDemoMode = true;
+  bool _showBoronButton = false;
 
   @override
   void initState() {
     super.initState();
     final vm = context.read<MonitorViewModel>();
     _isDemoMode = vm.isDemoMode;
+    _showBoronButton = vm.showBoronButton;
   }
 
   void _saveSettings() {
     context.read<MonitorViewModel>().saveSettings(
       demoMode: _isDemoMode,
+      showBoron: _showBoronButton,
     );
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Configuración guardada')),
@@ -49,6 +52,17 @@ class _SettingsViewState extends State<SettingsView> {
               onChanged: (val) {
                 setState(() {
                   _isDemoMode = val;
+                });
+              },
+            ),
+            const SizedBox(height: 16),
+            SwitchListTile(
+              title: const Text('Consulta a Boron'),
+              activeThumbColor: AppTheme.solenisMint,
+              value: _showBoronButton,
+              onChanged: (val) {
+                setState(() {
+                  _showBoronButton = val;
                 });
               },
             ),

@@ -160,10 +160,11 @@ class _HomeViewState extends State<HomeView> {
                     step: vm.data.step,
                     description: vm.data.stepDescription,
                   ),
-                  const SizedBox(height: 32),
-
-                  // --- Botón de consulta al Boron ---
-                  _BoronCommandButton(),
+                  if (vm.showBoronButton) ...[
+                    const SizedBox(height: 32),
+                    // --- Botón de consulta al Boron ---
+                    _BoronCommandButton(),
+                  ],
                 ],
               ),
             ),
